@@ -425,6 +425,7 @@ public class JdbcExecutor implements ExecutorInterface, Service {
                         .stream()
                         .filter(workerTask -> this.deduplicateWorkerTask(execution, executorState, workerTask.getTaskRun()))
                         .forEach(throwConsumer(workerTask -> {
+                            // FIXME instead of sending a workerTaskResult to the queue, we should add them directly in the exec to avoid another loop
                             try {
                                 if (!TruthUtils.isTruthy(workerTask.getRunContext().render(workerTask.getTask().getRunIf()))) {
                                     workerTaskResultQueue.emit(new WorkerTaskResult(workerTask.getTaskRun().withState(State.Type.SKIPPED)));
